@@ -89,8 +89,25 @@ export default class App extends Component {
     });
   };
 
+  onSearchChange = (term) => {
+    this.setState({ term })
+  };
+
+  search(items, term) {
+    if (term.length === 0) {
+      return items;
+    }
+
+    return items.filter((item) => {
+      return item.label
+            .toLowerCase()
+            .indexOf(term.toLowerCase()) > -1;
+    });
+  };
+
   render() {
-    const { todoData } = this.state;
+    const { todoData, term } = this.state;
+    const visibleItems = this.search(todoData, term);
     const doneCount = todoData.filter((el) => el.done).length;
     const todoCount = todoData.length - doneCount;
 
@@ -98,12 +115,13 @@ export default class App extends Component {
       <div className="todo-app">
         <AppHeader toDo={ todoCount } done={ doneCount } />
         <div className="top-palen d-flex">
-          <SearchPanel />
+          <SearchPanel
+            onSearchChange={this.onSearchChange} />
           <ItemStatusFilter />
         </div>
 
         <TodoList
-          todos={ todoData }
+          todos={ visibleItems }
           onDeleted={ this.deleteItem }
           onToggleImportant={ this.onToggleImportant }
           onToggleDone={ this.onToggleDone }
